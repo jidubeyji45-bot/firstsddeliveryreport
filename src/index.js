@@ -457,6 +457,7 @@ th {
           <th>Missent %</th>
           <th>RTS %</th>
           <th>Delivery % (RTS)</th>
+          <th>Remarks</th>
         </tr>
       </thead>
 
@@ -649,7 +650,8 @@ function render() {
       deliveryPct.toFixed(2) + '%</span></td>' +
       '<td>' + missentPct.toFixed(2) + '%</td>' +
       '<td>' + rtsPct.toFixed(2) + '%</td>' +
-      '<td>' + deliveryRtsPct.toFixed(2) + '%</td>';
+     '<td>' + deliveryRtsPct.toFixed(2) + '%</td>' +
+'<td>' + String(row.remarks || '') + '</td>';
 
     tbody.appendChild(tr);
   });
