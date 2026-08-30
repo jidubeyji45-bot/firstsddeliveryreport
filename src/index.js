@@ -30,6 +30,7 @@ if (url.pathname === "/" && request.method === "GET") {
 
         const {
           report_date,
+          report_type,
           office_name,
           bags_received,
           articles_received,
@@ -51,6 +52,7 @@ if (url.pathname === "/" && request.method === "GET") {
         await env.DB.prepare(`
           INSERT INTO delivery_reports (
             report_date,
+            report_type,
             office_name,
             bags_received,
             articles_received,
@@ -63,7 +65,7 @@ if (url.pathname === "/" && request.method === "GET") {
           )
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
-          ON CONFLICT(report_date, office_name)
+ON CONFLICT(report_date, office_name, report_type)
           DO UPDATE SET
             bags_received = excluded.bags_received,
             articles_received = excluded.articles_received,
@@ -76,6 +78,7 @@ if (url.pathname === "/" && request.method === "GET") {
         `)
           .bind(
             report_date,
+            report_type,
             office_name,
             Number(bags_received || 0),
             Number(articles_received || 0),
@@ -110,19 +113,20 @@ if (url.pathname === "/api/report" && request.method === "DELETE") {
 
     const report_date = data.report_date;
     const office_name = data.office_name;
+    const report_type = data.report_type;
 
-    if (!report_date || !office_name) {
+if (!report_date || !office_name || !report_type) {
       return Response.json(
-        { success: false, error: "Date and office are required." },
+        { success: false, error: "Date, office and report type are required." },
         { status: 400 }
       );
     }
 
     const result = await env.DB.prepare(`
       DELETE FROM delivery_reports
-      WHERE report_date = ? AND office_name = ?
+WHERE report_date = ? AND office_name = ? AND report_type = ?
     `)
-      .bind(report_date, office_name)
+.bind(report_date, office_name, report_type)
       .run();
 
     return Response.json({
@@ -392,7 +396,13 @@ th {
       <label>REPORT DATE</label>
       <select id="date"></select>
     </div>
-
+<div class="control">
+    <label>REPORT TYPE</label>
+    <select id="reportTypeFilter">
+        <option value="Overall">Overall Report</option>
+        <option value="24 SP">24 SP Report</option>
+    </select>
+</div>
     <div class="control">
       <label>OFFICE SEARCH</label>
       <input id="search" placeholder="Search office...">
@@ -555,20 +565,22 @@ async function loadData() {
 
 function render() {
   var selectedDate = document.getElementById('date').value;
-
+var selectedReportType =
+  document.getElementById('reportTypeFilter').value;
   var search =
     document.getElementById('search').value.trim().toLowerCase();
 
   var rows = allData.filter(function(row) {
     var correctDate = row.report_date === selectedDate;
-
+var correctReportType =
+  (row.report_type || 'Overall') === selectedReportType;
     var correctOffice =
       !search ||
       String(row.office_name || '')
         .toLowerCase()
         .indexOf(search) !== -1;
 
-    return correctDate && correctOffice;
+return correctDate && correctReportType && correctOffice;
   });
 
   var totalReceived = 0;
@@ -659,7 +671,8 @@ function render() {
 
 document.getElementById('date')
   .addEventListener('change', render);
-
+document.getElementById('reportTypeFilter')
+  .addEventListener('change', render);
 document.getElementById('search')
   .addEventListener('input', render);
 
@@ -844,7 +857,13 @@ const ENTRY_HTML = `
         <label>Date</label>
         <input type="date" id="report_date" required>
       </div>
-
+<div>
+    <label>Report Type</label>
+    <select id="report_type" required>
+        <option value="Overall">Overall Report</option>
+        <option value="24 SP">24 SP Report</option>
+    </select>
+</div>
       <div>
         <label>Office</label>
         <select id="office_name" required>
@@ -1009,6 +1028,8 @@ document.getElementById("reportForm").addEventListener(
       report_date:
         document.getElementById("report_date").value,
 
+report_type:
+    document.getElementById("report_type").value,
       office_name:
         document.getElementById("office_name").value,
 
@@ -1080,10 +1101,11 @@ document.getElementById("deleteBtn").addEventListener("click", async function ()
 
   const report_date = document.getElementById("report_date").value;
   const office_name = document.getElementById("office_name").value;
+  const report_type = document.getElementById("report_type").value;
   const resultBox = document.getElementById("result");
 
-  if (!report_date || !office_name) {
-    alert("Please select Date and Office first.");
+if (!report_date || !office_name || !report_type) {
+alert("Please select Date, Report Type and Office first.");
     return;
   }
 
@@ -1107,7 +1129,8 @@ document.getElementById("deleteBtn").addEventListener("click", async function ()
       },
       body: JSON.stringify({
         report_date: report_date,
-        office_name: office_name
+        office_name: office_name,
+        report_type: report_type
       })
     });
 
