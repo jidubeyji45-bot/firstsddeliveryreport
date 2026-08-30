@@ -702,10 +702,13 @@ a {
           <th>Received</th>
           <th>Issued</th>
           <th>Delivered</th>
-          <th>Delivery %</th>
-          <th>Missent %</th>
-          <th>RTS %</th>
-          <th>Delivery % (RTS)</th>
+ <th>Delivery %</th>
+<th>Missent</th>
+<th>Missent %</th>
+<th>RTS</th>
+<th>RTS %</th>
+<th>Deposit</th>
+<th>Delivery % (RTS)</th>
           <th>Remarks</th>
         </tr>
       </thead>
@@ -899,9 +902,12 @@ return correctDate && correctReportType && correctOffice;
       '<td><span class="badge ' +
       badgeClass(deliveryPct) + '">' +
       deliveryPct.toFixed(2) + '%</span></td>' +
-      '<td>' + missentPct.toFixed(2) + '%</td>' +
-      '<td>' + rtsPct.toFixed(2) + '%</td>' +
-     '<td>' + deliveryRtsPct.toFixed(2) + '%</td>' +
+'<td>' + formatNumber(missent) + '</td>' +
+'<td>' + missentPct.toFixed(2) + '%</td>' +
+'<td>' + formatNumber(rts) + '</td>' +
+'<td>' + rtsPct.toFixed(2) + '%</td>' +
+'<td>' + formatNumber(row.deposit) + '</td>' +
+'<td>' + deliveryRtsPct.toFixed(2) + '%</td>' +
 '<td>' + String(row.remarks || '') + '</td>';
 
     tbody.appendChild(tr);
