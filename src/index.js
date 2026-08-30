@@ -364,7 +364,7 @@ th {
 
     <button id="clear">Clear</button>
 
-    <a class="entryBtn" href="/entry">Enter Daily Report</a>
+    
 
   </div>
 
