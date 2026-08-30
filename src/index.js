@@ -378,6 +378,245 @@ th {
     width: 100%;
   }
 }
+/* ===== MODERN COLOURFUL DASHBOARD THEME ===== */
+
+body {
+  background:
+    radial-gradient(circle at top left, #dbeafe 0, transparent 35%),
+    radial-gradient(circle at top right, #ede9fe 0, transparent 35%),
+    linear-gradient(135deg, #f8fbff, #f5f3ff);
+  color: #1e293b;
+  min-height: 100vh;
+}
+
+/* Main Container */
+.wrap {
+  max-width: 1450px;
+  margin: auto;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 45%, #7c3aed 100%);
+  color: white;
+  border-radius: 22px;
+  padding: 28px 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.25);
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  right: -50px;
+  top: -70px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.header p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: #e0e7ff;
+}
+
+/* Filters / Controls */
+.controls {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.08);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 22px;
+}
+
+.control label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 7px;
+  letter-spacing: 0.5px;
+}
+
+.control input,
+.control select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.control input:focus,
+.control select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+}
+
+/* Cards */
+.card,
+.stat-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover,
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(79,70,229,0.12);
+}
+
+/* Table Container */
+.table-wrap,
+.table-container {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+  border: 1px solid #e2e8f0;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+thead th {
+  background: linear-gradient(135deg, #1e40af, #4338ca);
+  color: white;
+  padding: 14px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border: none;
+}
+
+tbody td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 13px;
+  color: #334155;
+}
+
+tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+tbody tr:hover {
+  background: #eef2ff;
+}
+
+/* Buttons */
+button,
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover,
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Links */
+a {
+  transition: all 0.2s ease;
+}
+
+/* Percentage / Status cells */
+.good,
+.success {
+  color: #15803d;
+  background: #dcfce7;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 5px 8px;
+}
+
+.warning {
+  color: #a16207;
+  background: #fef9c3;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 5px 8px;
+}
+
+.danger,
+.bad {
+  color: #b91c1c;
+  background: #fee2e2;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 5px 8px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#6366f1, #8b5cf6);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eef2ff;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 12px;
+  }
+
+  .header {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .controls {
+    padding: 14px;
+  }
+
+  table {
+    min-width: 900px;
+  }
+}
 </style>
 </head>
 
