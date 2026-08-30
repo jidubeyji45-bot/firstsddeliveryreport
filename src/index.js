@@ -2,18 +2,16 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Existing dashboard
-    if (url.pathname === "/") {
-      const html = atob(DASHBOARD_BASE64);
-
-      return new Response(html, {
-        status: 200,
-        headers: {
-          "content-type": "text/html; charset=UTF-8",
-          "cache-control": "no-store"
-        }
-      });
+   // Live D1 dashboard
+if (url.pathname === "/" && request.method === "GET") {
+  return new Response(LIVE_DASHBOARD_HTML, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=UTF-8",
+      "cache-control": "no-store"
     }
+  });
+}
 
     // Daily report entry form
     if (url.pathname === "/entry" && request.method === "GET") {
@@ -147,6 +145,498 @@ export default {
   }
 };
 
+const LIVE_DASHBOARD_HTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1st SD Delivery Dashboard</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #f3f6fa;
+  color: #1f2937;
+  font-family: Arial, sans-serif;
+}
+
+.wrap {
+  max-width: 1400px;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  background: #173b63;
+  color: white;
+  padding: 24px 28px;
+  border-radius: 15px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.header p {
+  margin: 7px 0 0;
+}
+
+.controls {
+  background: white;
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 13px;
+  display: flex;
+  gap: 15px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.control {
+  min-width: 220px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+select, input, button, .entryBtn {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #d7dee8;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+select, input {
+  width: 100%;
+  background: white;
+}
+
+button {
+  background: #173b63;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.entryBtn {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  background: #1769e0;
+  color: white;
+  font-weight: bold;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 11px 14px;
+  background: #eaf3fb;
+  border-left: 4px solid #4b789d;
+  border-radius: 7px;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.card, .panel {
+  background: white;
+  border-radius: 13px;
+  border: 1px solid #e7edf3;
+}
+
+.card {
+  padding: 15px;
+}
+
+.label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: bold;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 7px;
+}
+
+.panel {
+  margin-top: 14px;
+  padding: 17px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 11px 8px;
+  border-bottom: 1px solid #edf1f5;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th:first-child, td:first-child {
+  text-align: left;
+}
+
+th {
+  background: #f7f9fc;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.badge {
+  padding: 5px 8px;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+.good {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mid {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media(max-width:1000px) {
+  .kpis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media(max-width:600px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .control {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="header">
+    <h1>DAILY DELIVERY REPORT - 1st SUB DIVISION</h1>
+    <p>Office-wise Delivery Performance</p>
+  </div>
+
+  <div class="controls">
+
+    <div class="control">
+      <label>REPORT DATE</label>
+      <select id="date"></select>
+    </div>
+
+    <div class="control">
+      <label>OFFICE SEARCH</label>
+      <input id="search" placeholder="Search office...">
+    </div>
+
+    <button id="clear">Clear</button>
+
+    <a class="entryBtn" href="/entry">Enter Daily Report</a>
+
+  </div>
+
+  <div class="status" id="status">
+    Loading data from D1 database...
+  </div>
+
+  <div class="kpis">
+
+    <div class="card">
+      <div class="label">ARTICLES RECEIVED</div>
+      <div class="value" id="received">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">ARTICLES ISSUED</div>
+      <div class="value" id="issued">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">ARTICLES DELIVERED</div>
+      <div class="value" id="delivered">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">AVERAGE DELIVERY</div>
+      <div class="value" id="average">0.00%</div>
+    </div>
+
+    <div class="card">
+      <div class="label">MISSENT</div>
+      <div class="value" id="missent">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">RTS</div>
+      <div class="value" id="rts">0</div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>Office-wise Performance <span id="count"></span></h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Office</th>
+          <th>Received</th>
+          <th>Issued</th>
+          <th>Delivered</th>
+          <th>Delivery %</th>
+          <th>Missent %</th>
+          <th>RTS %</th>
+          <th>Delivery % (RTS)</th>
+        </tr>
+      </thead>
+
+      <tbody id="tbody"></tbody>
+    </table>
+
+  </div>
+
+</div>
+
+<script>
+var allData = [];
+
+function n(value) {
+  return Number(value || 0);
+}
+
+function percent(value, total) {
+  if (!total) return 0;
+  return (value / total) * 100;
+}
+
+function formatNumber(value) {
+  return n(value).toLocaleString('en-IN');
+}
+
+function formatDate(value) {
+  var p = value.split('-');
+  if (p.length !== 3) return value;
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function badgeClass(value) {
+  if (value >= 95) return 'good';
+  if (value >= 85) return 'mid';
+  return 'low';
+}
+
+async function loadData() {
+  var status = document.getElementById('status');
+
+  try {
+    var response = await fetch('/api/reports');
+
+    if (!response.ok) {
+      throw new Error('Unable to read database');
+    }
+
+    allData = await response.json();
+
+    if (!Array.isArray(allData)) {
+      allData = [];
+    }
+
+    var dates = [];
+
+    allData.forEach(function(row) {
+      if (row.report_date && dates.indexOf(row.report_date) === -1) {
+        dates.push(row.report_date);
+      }
+    });
+
+    dates.sort().reverse();
+
+    var dateSelect = document.getElementById('date');
+    dateSelect.innerHTML = '';
+
+    dates.forEach(function(date) {
+      var option = document.createElement('option');
+      option.value = date;
+      option.textContent = formatDate(date);
+      dateSelect.appendChild(option);
+    });
+
+    if (dates.length === 0) {
+      var option = document.createElement('option');
+      option.value = '';
+      option.textContent = 'No Data';
+      dateSelect.appendChild(option);
+
+      status.textContent =
+        'Database connected, but no report is available.';
+    } else {
+      dateSelect.value = dates[0];
+      status.textContent = 'Live data connected to D1 database.';
+    }
+
+    render();
+
+  } catch (error) {
+    status.textContent =
+      'Error loading report: ' + error.message;
+  }
+}
+
+function render() {
+  var selectedDate = document.getElementById('date').value;
+
+  var search =
+    document.getElementById('search').value.trim().toLowerCase();
+
+  var rows = allData.filter(function(row) {
+    var correctDate = row.report_date === selectedDate;
+
+    var correctOffice =
+      !search ||
+      String(row.office_name || '')
+        .toLowerCase()
+        .indexOf(search) !== -1;
+
+    return correctDate && correctOffice;
+  });
+
+  var totalReceived = 0;
+  var totalIssued = 0;
+  var totalDelivered = 0;
+  var totalMissent = 0;
+  var totalRts = 0;
+
+  var deliveryPercentages = [];
+
+  rows.forEach(function(row) {
+    totalReceived += n(row.articles_received);
+    totalIssued += n(row.articles_issue);
+    totalDelivered += n(row.delivered);
+    totalMissent += n(row.missent);
+    totalRts += n(row.rts);
+
+    if (n(row.articles_issue) > 0) {
+      deliveryPercentages.push(
+        percent(n(row.delivered), n(row.articles_issue))
+      );
+    }
+  });
+
+  var average = 0;
+
+  if (deliveryPercentages.length > 0) {
+    average =
+      deliveryPercentages.reduce(function(a, b) {
+        return a + b;
+      }, 0) / deliveryPercentages.length;
+  }
+
+  document.getElementById('received').textContent =
+    formatNumber(totalReceived);
+
+  document.getElementById('issued').textContent =
+    formatNumber(totalIssued);
+
+  document.getElementById('delivered').textContent =
+    formatNumber(totalDelivered);
+
+  document.getElementById('missent').textContent =
+    formatNumber(totalMissent);
+
+  document.getElementById('rts').textContent =
+    formatNumber(totalRts);
+
+  document.getElementById('average').textContent =
+    average.toFixed(2) + '%';
+
+  document.getElementById('count').textContent =
+    '(' + rows.length + ' offices)';
+
+  var tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  rows.forEach(function(row) {
+    var received = n(row.articles_received);
+    var issued = n(row.articles_issue);
+    var delivered = n(row.delivered);
+    var missent = n(row.missent);
+    var rts = n(row.rts);
+
+    var deliveryPct = percent(delivered, issued);
+    var missentPct = percent(missent, received);
+    var rtsPct = percent(rts, received);
+    var deliveryRtsPct = percent(delivered + rts, issued);
+
+    var tr = document.createElement('tr');
+
+    tr.innerHTML =
+      '<td><b>' + String(row.office_name || '') + '</b></td>' +
+      '<td>' + formatNumber(received) + '</td>' +
+      '<td>' + formatNumber(issued) + '</td>' +
+      '<td>' + formatNumber(delivered) + '</td>' +
+      '<td><span class="badge ' +
+      badgeClass(deliveryPct) + '">' +
+      deliveryPct.toFixed(2) + '%</span></td>' +
+      '<td>' + missentPct.toFixed(2) + '%</td>' +
+      '<td>' + rtsPct.toFixed(2) + '%</td>' +
+      '<td>' + deliveryRtsPct.toFixed(2) + '%</td>';
+
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('date')
+  .addEventListener('change', render);
+
+document.getElementById('search')
+  .addEventListener('input', render);
+
+document.getElementById('clear')
+  .addEventListener('click', function() {
+    document.getElementById('search').value = '';
+    render();
+  });
+
+loadData();
+</script>
+
+</body>
+</html>
+`;
 
 const ENTRY_HTML = `
 <!DOCTYPE html>
