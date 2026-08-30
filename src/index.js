@@ -103,7 +103,43 @@ if (url.pathname === "/" && request.method === "GET") {
         );
       }
     }
+// Delete a delivery report
+if (url.pathname === "/api/report" && request.method === "DELETE") {
+  try {
+    const data = await request.json();
 
+    const report_date = data.report_date;
+    const office_name = data.office_name;
+
+    if (!report_date || !office_name) {
+      return Response.json(
+        { success: false, error: "Date and office are required." },
+        { status: 400 }
+      );
+    }
+
+    const result = await env.DB.prepare(`
+      DELETE FROM delivery_reports
+      WHERE report_date = ? AND office_name = ?
+    `)
+      .bind(report_date, office_name)
+      .run();
+
+    return Response.json({
+      success: true,
+      message: "Delivery report deleted successfully."
+    });
+
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message
+      },
+      { status: 500 }
+    );
+  }
+}
     // Read reports
     if (url.pathname === "/api/reports" && request.method === "GET") {
       try {
@@ -891,7 +927,9 @@ const ENTRY_HTML = `
     <button type="submit">
       Save Delivery Report
     </button>
-
+<button type="button" id="deleteBtn" style="background:#dc2626; margin-top:12px;">
+  Delete Entry
+</button>
   </form>
 
   <div id="result" class="result"></div>
@@ -1036,7 +1074,59 @@ document.getElementById("reportForm").addEventListener(
     }
   }
 );
+document.getElementById("deleteBtn").addEventListener("click", async function () {
 
+  const report_date = document.getElementById("report_date").value;
+  const office_name = document.getElementById("office_name").value;
+  const resultBox = document.getElementById("result");
+
+  if (!report_date || !office_name) {
+    alert("Please select Date and Office first.");
+    return;
+  }
+
+  const confirmDelete = confirm(
+    "Are you sure you want to delete the report for " +
+    office_name +
+    " dated " +
+    report_date +
+    "?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/report", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        report_date: report_date,
+        office_name: office_name
+      })
+    });
+
+    const result = await response.json();
+
+    resultBox.style.display = "block";
+
+    if (result.success) {
+      resultBox.className = "result success";
+      resultBox.textContent = "✓ Delivery report deleted successfully.";
+    } else {
+      resultBox.className = "result error";
+      resultBox.textContent = "Error: " + result.error;
+    }
+
+  } catch (error) {
+    resultBox.style.display = "block";
+    resultBox.className = "result error";
+    resultBox.textContent = "Unable to delete report.";
+  }
+});
 </script>
 
 </body>
