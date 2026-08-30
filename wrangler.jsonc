@@ -2,5 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "firstsddeliveryreport",
   "main": "src/index.js",
-  "compatibility_date": "2026-08-30"
+  "compatibility_date": "2026-08-30",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dailydeliveryreport",
+      "database_id": "c8aadaab-0e8a-4b43-a700-933d8a138093"
+    }
+  ]
 }
