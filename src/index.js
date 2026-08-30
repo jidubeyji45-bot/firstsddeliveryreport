@@ -63,7 +63,7 @@ if (url.pathname === "/" && request.method === "GET") {
             delivered,
             remarks
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 ON CONFLICT(report_date, office_name, report_type)
           DO UPDATE SET
