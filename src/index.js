@@ -1082,48 +1082,12 @@ const ENTRY_HTML = `
         grid-template-columns: 1fr 1fr;
       }
     }
-    /* ===== POSTMAN CYCLE LOADER ===== */
-#postman-loader {
-    position: fixed;
-    inset: 0;
-    background: #ffffff;
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
 
-#postman-loader::before {
-    content: "🚴";
-    display: block;
-    font-size: 70px;
-    margin-bottom: 18px;
-    animation: postmanRide 1.2s ease-in-out infinite alternate;
-}
-
-.loader-text {
-    font-size: 18px;
-    font-weight: 600;
-    color: #d71920;
-    font-family: Arial, sans-serif;
-}
-
-@keyframes postmanRide {
-    0% {
-        transform: translateX(-45px);
-    }
-    100% {
-        transform: translateX(45px);
-    }
-}
   </style>
 </head>
 
 <body>
-<div id="postman-loader">
-  <div class="loader-text">Opening Delivery Report...</div>
-</div>
+
 
 <div class="container">
 
@@ -1437,20 +1401,7 @@ alert("Please select Date, Report Type and Office first.");
 });
 </script>
 
-<script>
-window.addEventListener("load", function () {
-    const loader = document.getElementById("postman-loader");
 
-    setTimeout(function () {
-        loader.style.opacity = "0";
-        loader.style.transition = "opacity 0.5s ease";
-
-        setTimeout(function () {
-            loader.style.display = "none";
-        }, 500);
-    }, 1500);
-});
-</script>
 </body>
 </html>
 `;
